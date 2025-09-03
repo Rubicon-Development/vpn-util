@@ -1,7 +1,7 @@
 {
   description = "vpn-util: Janet build via flakes";
 
-  inputs =  {
+  inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     janet-c = {
@@ -14,8 +14,16 @@
     };
   };
 
-  outputs = { self, nixpkgs, flake-utils, janet-c, janet-h }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+      janet-c,
+      janet-h,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = import nixpkgs { inherit system; };
         lib = pkgs.lib;
@@ -24,15 +32,17 @@
         packages = {
           default = pkgs.stdenv.mkDerivation {
             pname = "vpn";
-            version = "0.1.0";
+            version = "0.1.3";
             src = ./.;
 
-            # jpm comes with janet in nixpkgs
-            nativeBuildInputs = [ pkgs.jpm pkgs.janet ];
-            buildInputs = [ pkgs.jpm pkgs.janet ];
-
-            # jpm may invoke ld directly; avoid GCC-style -Wl flags.
-            # We rely on wrapping to provide runtime lib path instead of rpath.
+            nativeBuildInputs = [
+              pkgs.jpm
+              pkgs.janet
+            ];
+            buildInputs = [
+              pkgs.jpm
+              pkgs.janet
+            ];
 
             buildPhase = ''
               runHook preBuild
@@ -57,8 +67,14 @@
             version = "0.1.0";
             src = ./.;
 
-            nativeBuildInputs = [ pkgs.jpm pkgs.janet ];
-            buildInputs = [ pkgs.jpm pkgs.janet ];
+            nativeBuildInputs = [
+              pkgs.jpm
+              pkgs.janet
+            ];
+            buildInputs = [
+              pkgs.jpm
+              pkgs.janet
+            ];
 
             buildPhase = ''
               runHook preBuild
@@ -91,5 +107,6 @@
             pkgs.janet
           ];
         };
-      });
+      }
+    );
 }
