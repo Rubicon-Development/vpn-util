@@ -1,4 +1,3 @@
-#!/usr/bin/env janet
 (import ./query :as q)
 
 (defn usage-pp []
@@ -34,7 +33,13 @@
   (print host))
 
 (defn handle-web [host]
-  (os/execute ["xdg-open" (string/join @["http://" host])] :pd))
+  (def cmd (match (os/which)
+             :windows "start"
+             :linux "xdg-open"
+             (do
+               (eprint "OS not supported")
+               (os/exit 1))))
+  (os/execute [cmd (string/join @["http://" host])] :pd))
 
 (defn handle-ssh [host]
   (os/execute
