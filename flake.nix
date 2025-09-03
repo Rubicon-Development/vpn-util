@@ -19,7 +19,7 @@
           src = ./.;
 
           # jpm comes with janet in nixpkgs
-          nativeBuildInputs = [ pkgs.jpm pkgs.janet pkgs.makeWrapper ];
+          nativeBuildInputs = [ pkgs.jpm pkgs.janet ];
           buildInputs = [ pkgs.jpm pkgs.janet ];
 
           # jpm may invoke ld directly; avoid GCC-style -Wl flags.
@@ -34,10 +34,6 @@
           installPhase = ''
             runHook preInstall
             install -Dm755 build/vpn $out/bin/vpn
-            # Provide runtime deps (janet/jpm and dig) on PATH
-            wrapProgram $out/bin/vpn \
-              --prefix PATH : ${lib.makeBinPath [ pkgs.janet pkgs.dnsutils ]} \
-              --prefix LD_LIBRARY_PATH : ${pkgs.janet}/lib
             runHook postInstall
           '';
 
@@ -55,7 +51,6 @@
         devShells.default = pkgs.mkShell {
           packages = [
             pkgs.janet
-            pkgs.dnsutils # provides `dig`
           ];
         };
       });
