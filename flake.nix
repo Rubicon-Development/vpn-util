@@ -27,13 +27,13 @@
 
           buildPhase = ''
             runHook preBuild
-            jpm quickbin vpn.janet vpn --libpath=${pkgs.janet}/lib
+            jpm build --libpath=${pkgs.janet}/lib
             runHook postBuild
           '';
 
           installPhase = ''
             runHook preInstall
-            install -Dm755 vpn $out/bin/vpn
+            install -Dm755 build/vpn $out/bin/vpn
             # Provide runtime deps (janet/jpm and dig) on PATH
             wrapProgram $out/bin/vpn \
               --prefix PATH : ${lib.makeBinPath [ pkgs.janet pkgs.dnsutils ]} \
