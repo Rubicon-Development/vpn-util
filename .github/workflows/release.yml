@@ -10,42 +10,6 @@ permissions:
 
 jobs:
   build-release:
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            system: x86_64-linux
-            name: linux-x86_64
-          - os: ubuntu-latest
-            system: aarch64-linux
-            name: linux-arm64
-          - os: macos-latest
-            system: x86_64-darwin
-            name: darwin-x86_64
-          - os: macos-latest
-            system: aarch64-darwin
-            name: darwin-arm64
-    
-    runs-on: ${{ matrix.os }}
-    steps:
-    - uses: actions/checkout@v4
-    
-    - uses: cachix/install-nix-action@v27
-      with:
-        github_access_token: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Build binary for ${{ matrix.name }}
-      run: |
-        nix build .#default --system ${{ matrix.system }}
-        cp result/bin/vpn vpn-${{ matrix.name }}
-    
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: vpn-${{ matrix.name }}
-        path: vpn-${{ matrix.name }}
-
-  build-c-source:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -53,6 +17,11 @@ jobs:
     - uses: cachix/install-nix-action@v27
       with:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Build x86_64-linux binary
+      run: |
+        nix build .#default
+        cp result/bin/vpn vpn-linux-x86_64
     
     - name: Build C source package
       run: |
@@ -64,28 +33,12 @@ jobs:
         echo "Compile with: cl vpn.c janet.c /Fe:vpn.exe" > vpn-c-source/BUILD.txt
         zip -r vpn-c-source.zip vpn-c-source/
     
-    - name: Upload C source artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: vpn-c-source
-        path: vpn-c-source.zip
-
-  create-release:
-    needs: [build-release, build-c-source]
-    runs-on: ubuntu-latest
-    steps:
-    - name: Download all artifacts
-      uses: actions/download-artifact@v4
-    
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          vpn-linux-x86_64/vpn-linux-x86_64
-          vpn-linux-arm64/vpn-linux-arm64
-          vpn-darwin-x86_64/vpn-darwin-x86_64
-          vpn-darwin-arm64/vpn-darwin-arm64
-          vpn-c-source/vpn-c-source.zip
+          vpn-linux-x86_64
+          vpn-c-source.zip
         draft: false
         prerelease: false
       env:

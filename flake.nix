@@ -24,7 +24,7 @@
         packages = {
           default = pkgs.stdenv.mkDerivation {
             pname = "vpn";
-            version = "0.1.2";
+            version = "0.1.0";
             src = ./.;
 
             # jpm comes with janet in nixpkgs
