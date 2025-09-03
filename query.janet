@@ -50,7 +50,10 @@
   (net/write sock (make-query hostname))
   (def resp (net/read sock 512))
   (when (dyn 'net/close) (net/close sock))
-  (parse-a-records resp))
+  (def ips (parse-a-records resp))
+  (if (> (length ips) 0)
+    (get ips 0)
+    nil))
 
 # Example:
 # (pp (dns-a "mcsv2f1"))
