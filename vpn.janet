@@ -1,4 +1,5 @@
 #!/usr/bin/env janet
+(import ./query :as q)
 
 (defn usage-pp []
   (def msg ``
@@ -14,15 +15,20 @@
   (usage-pp)
   (os/exit 64))
 
+# (defn resolv)
+#   "Resolve IP"
+#   [host]
+#   (def f (file/temp))
+#   (os/execute ["dig" "-p" "5354" "@10.12.0.1" "-4" "+short" host] :p {:out f})
+#   (file/seek f :set 0)
+#   (def out (file/read f :all))
+#   (file/close f)
+#   (string/trim out)
+
 (defn resolv
   "Resolve IP"
   [host]
-  (def f (file/temp))
-  (os/execute ["dig" "-p" "5354" "@10.12.0.1" "-4" "+short" host] :p {:out f})
-  (file/seek f :set 0)
-  (def out (file/read f :all))
-  (file/close f)
-  (string/trim out))
+  (q/dns-a host))
 
 (defn handle-cmd [s]
   (match s
