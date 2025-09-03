@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: cachix/install-nix-action@v27
+      with:
+        github_access_token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Build x86_64-linux binary
+      run: |
+        nix build .#default
+        cp result/bin/vpn vpn-linux-x86_64
+    
+    - name: Build C source package
+      run: |
+        nix build .#vpn-c
+        mkdir -p vpn-c-source
+        cp result/vpn.c vpn-c-source/
+        cp result/janet.c vpn-c-source/
+        cp result/janet.h vpn-c-source/
+        echo "Compile with: cl vpn.c janet.c /Fe:vpn.exe" > vpn-c-source/BUILD.txt
+        zip -r vpn-c-source.zip vpn-c-source/
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          vpn-linux-x86_64
+          vpn-c-source.zip
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

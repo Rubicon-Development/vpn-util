@@ -1,12 +1,20 @@
 {
   description = "vpn-util: Janet build via flakes";
 
-  inputs = {
+  inputs =  {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    janet-c = {
+      url = "https://github.com/janet-lang/janet/releases/download/v1.39.1/janet.c";
+      flake = false;
+    };
+    janet-h = {
+      url = "https://github.com/janet-lang/janet/releases/download/v1.39.1/janet.h";
+      flake = false;
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils, janet-c, janet-h }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
@@ -61,6 +69,8 @@
             installPhase = ''
               runHook preInstall
               install -Dm644 build/vpn.c $out/vpn.c
+              install -Dm644 ${janet-c} $out/janet.c
+              install -Dm644 ${janet-h} $out/janet.h
               runHook postInstall
             '';
 

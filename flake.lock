@@ -18,6 +18,30 @@
         "type": "github"
       }
     },
+    "janet-c": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-x9gG2PXLNrH6zdA0/Ytfd203+xC2ByIJY6hMzOPqo9M=",
+        "type": "file",
+        "url": "https://github.com/janet-lang/janet/releases/download/v1.39.1/janet.c"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/janet-lang/janet/releases/download/v1.39.1/janet.c"
+      }
+    },
+    "janet-h": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-bTfQTpNhA7eMkl26XTbMhSKgyhZUBDxlkxR5K7NQoaE=",
+        "type": "file",
+        "url": "https://github.com/janet-lang/janet/releases/download/v1.39.1/janet.h"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/janet-lang/janet/releases/download/v1.39.1/janet.h"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1756787288,
@@ -37,6 +61,8 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
+        "janet-c": "janet-c",
+        "janet-h": "janet-h",
         "nixpkgs": "nixpkgs"
       }
     },
