@@ -1,3 +1,6 @@
+(def dns-server "10.12.0.1")
+(def dns-port 5354)
+
 (defn u16be [bs i] (+ (blshift (get bs i) 8) (get bs (+ i 1))))
 
 (defn push16be [buf n]
@@ -44,8 +47,8 @@
   ips)
 
 (defn dns-a [hostname &opt server port]
-  (default server "10.12.0.1")
-  (default port 5354)
+  (default server dns-server)
+  (default port dns-port)
   (def sock (net/connect server port :datagram))
   (net/write sock (make-query hostname))
   (def resp (net/read sock 512))
