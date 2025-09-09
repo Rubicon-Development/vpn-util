@@ -8,13 +8,13 @@
 
 (defn make-query [hostname]
   (def b (buffer/new 64))
-  (push16be b 0x1234)      # TXID
-  (push16be b 0x0100)      # flags: standard query, RD=1
-  (push16be b 1)           # QDCOUNT
-  (push16be b 0)           # ANCOUNT, NSCOUNT, ARCOUNT
+  (push16be b 0x1234) # TXID
+  (push16be b 0x0100) # flags: standard query, RD=1
+  (push16be b 1) # QDCOUNT
+  (push16be b 0) # ANCOUNT, NSCOUNT, ARCOUNT
   (push16be b 0)
   (push16be b 0)
-  
+
   # Encode hostname
   (if (string/find "." hostname)
     (each label (string/split hostname ".")
@@ -23,10 +23,10 @@
     (do
       (buffer/push-byte b (length hostname))
       (buffer/push-string b hostname)))
-  
-  (buffer/push-byte b 0)   # end of name
-  (push16be b 1)           # QTYPE=A
-  (push16be b 1)           # QCLASS=IN
+
+  (buffer/push-byte b 0) # end of name
+  (push16be b 1) # QTYPE=A
+  (push16be b 1) # QCLASS=IN
   b)
 
 (defn parse-a-records [resp]
@@ -34,8 +34,8 @@
   # Scan for A record pattern: type=1, class=1, rdlen=4
   (var i 0)
   (while (< (+ i 12) (length resp))
-    (when (and (= (get resp i) 0x00) (= (get resp (+ i 1)) 0x01)      # type A
-               (= (get resp (+ i 2)) 0x00) (= (get resp (+ i 3)) 0x01)  # class IN
+    (when (and (= (get resp i) 0x00) (= (get resp (+ i 1)) 0x01) # type A
+               (= (get resp (+ i 2)) 0x00) (= (get resp (+ i 3)) 0x01) # class IN
                (= (get resp (+ i 8)) 0x00) (= (get resp (+ i 9)) 0x04)) # rdlen=4
       (def ip-start (+ i 10))
       (when (<= (+ ip-start 4) (length resp))
