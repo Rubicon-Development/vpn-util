@@ -16,6 +16,11 @@
       flake = false;
     };
 
+    jurl = {
+      url = "github:cosmictoast/jurl/v1.4.3";
+      flake = false;
+    };
+
     janet-c = {
       url = "https://github.com/janet-lang/janet/releases/download/v1.39.1/janet.c";
       flake = false;
@@ -47,6 +52,29 @@
           name = "spork";
           src = inputs.spork;
         };
+
+        jurl = pkgs.stdenv.mkDerivation {
+          pname = "jurl";
+          version = "1.4.3";
+          src = inputs.jurl;
+
+          nativeBuildInputs = [pkgs.jpm pkgs.janet];
+          buildInputs = [pkgs.curl];
+
+          buildPhase = ''
+            runHook preBuild
+            jpm build
+            runHook postBuild
+          '';
+
+          installPhase = ''
+            runHook preInstall
+            mkdir -p $out/jpm_tree
+            export JANET_TREE=$out/jpm_tree
+            jpm install
+            runHook postInstall
+          '';
+        };
       in {
         devShells = {
           default = mkShell {
@@ -73,13 +101,17 @@
             buildInputs = [
               pkgs.jpm
               pkgs.janet
+              pkgs.curl
             ];
 
             buildPhase = ''
               runHook preBuild
-              export JANET_PATH="${spork}/jpm_tree/lib"
-              export JANET_MODPATH="${spork}/jpm_tree/lib"
-              jpm build --libpath=${pkgs.janet}/lib --modpath=${spork}/jpm_tree/lib
+              # Create a combined module directory
+              mkdir -p combined_modules
+              cp -r ${spork}/jpm_tree/lib/* combined_modules/ || true
+              cp -r ${jurl}/jpm_tree/lib/* combined_modules/ || true
+              export JANET_PATH="$(pwd)/combined_modules"
+              jpm build --libpath=${pkgs.janet}/lib --modpath=$(pwd)/combined_modules
               runHook postBuild
             '';
 

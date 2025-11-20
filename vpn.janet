@@ -1,5 +1,7 @@
 (import ./query :as q)
 (import spork/json)
+(import jurl)
+(import jurl/native)
 
 (defn usage-pp []
   (def msg ``
@@ -26,19 +28,16 @@
 (def api-psk "bp9ZdSDz4my/X4g/jFah2GIFWXYRxoJGGiVS8ro/5ag=")
 
 (defn fetch-devices
-  "Fetch devices from the VPN API using curl"
+  "Fetch devices from the VPN API using jurl"
   []
-  (def proc (os/spawn
-    ["curl" "-s" "--insecure"
-     "-H" (string "psk: " api-psk)
-     api-url]
-    :p {:out :pipe}))
-  (def json-str (:read (proc :out) :all))
-  (def exit-code (:wait proc))
-  (when (not= exit-code 0)
-    (eprint "Error fetching devices from API")
-    (os/exit 1))
-  (json/decode json-str))
+  (def response (jurl/request {:url api-url :headers {"psk" api-psk}}))
+  # Check if we got a valid response
+  (when (not= (response :error) :ok)
+    # Ignore SSL errors if we have a body
+    (when (not (response :body))
+      (eprintf "Error fetching devices: %q" (native/strerror (response :error)))
+      (os/exit 1)))
+  (json/decode (response :body)))
 
 (defn handle-list
   "Display a list of device names"
@@ -63,14 +62,14 @@
 (defn handle-cmd [s]
   (match s
     "ip" :ip
-    "web" :web
-    "ssh" :ssh
-    "list" :list
-    "list-details" :list-details
-    _ (do
-        (eprint "Error unknown command: " s)
-        (usage-pp)
-        (os/exit 1))))
+     "web" :web
+     "ssh" :ssh
+     "list" :list
+     "list-details" :list-details
+     _ (do
+         (eprint "Error unknown command: " s)
+         (usage-pp)
+         (os/exit 1))))
 
 (defn handle-ip [host]
   (print host))
@@ -86,7 +85,7 @@
 
 (defn handle-ssh [host]
   (os/execute
-    ["ssh" (string/join @["apex@" host])] :pd))
+   ["ssh" (string/join @["apex@" host])] :pd))
 
 (defn main
   [& args]

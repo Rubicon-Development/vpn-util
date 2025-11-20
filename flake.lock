@@ -95,6 +95,23 @@
         "type": "github"
       }
     },
+    "jurl": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1737277484,
+        "narHash": "sha256-sz6hXLVotTEFBPAVgjGjT+S1ZZwsmmHvy+HZN7sRk6E=",
+        "owner": "cosmictoast",
+        "repo": "jurl",
+        "rev": "f31ae0189e2f1ef577d00ed70395746364c3082f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cosmictoast",
+        "ref": "v1.4.3",
+        "repo": "jurl",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1735554305,
@@ -149,6 +166,7 @@
         "janet-h": "janet-h",
         "janet-lsp-src": "janet-lsp-src",
         "janet2nix": "janet2nix",
+        "jurl": "jurl",
         "nixpkgs": "nixpkgs_2",
         "spork": "spork"
       }
