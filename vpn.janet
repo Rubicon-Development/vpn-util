@@ -1,12 +1,15 @@
 (import ./query :as q)
+(import spork/json)
 
 (defn usage-pp []
   (def msg ``
-    Usage: vpn [ip|web|ssh] [Hostname]
+    Usage: vpn [ip|web|ssh|list|list-details] [Hostname]
     Commands:
     ip: Show the ip
     web: Open loval webpage in browser
     ssh: start and ssh connection
+    list: Show a list of device names
+    list-details: Show all available information for each device
     ``)
   (print msg))
 
@@ -19,11 +22,51 @@
   [host]
   (q/dns-a host))
 
+(def api-url "https://vpn.myrubicon.tech:8080/get_devices_full")
+(def api-psk "bp9ZdSDz4my/X4g/jFah2GIFWXYRxoJGGiVS8ro/5ag=")
+
+(defn fetch-devices
+  "Fetch devices from the VPN API using curl"
+  []
+  (def proc (os/spawn
+    ["curl" "-s" "--insecure"
+     "-H" (string "psk: " api-psk)
+     api-url]
+    :p {:out :pipe}))
+  (def json-str (:read (proc :out) :all))
+  (def exit-code (:wait proc))
+  (when (not= exit-code 0)
+    (eprint "Error fetching devices from API")
+    (os/exit 1))
+  (json/decode json-str))
+
+(defn handle-list
+  "Display a list of device names"
+  []
+  (def devices (fetch-devices))
+  (each device devices
+    (print (device "hostname"))))
+
+(defn handle-list-details
+  "Display detailed information for all devices"
+  []
+  (def devices (fetch-devices))
+  (each device devices
+    (print "Device: " (device "hostname"))
+    (print "  Type: " (device "dev_type"))
+    (print "  IP: " (device "ip"))
+    (print "  Last Seen: " (device "last_seen"))
+    (print "  Firmware: " (device "fw_version"))
+    (print "  Public Key: " (device "public_key"))
+    (print)))
+
 (defn handle-cmd [s]
   (match s
     "ip" :ip
     "web" :web
     "ssh" :ssh
+    "list" :list
+    "list-details" :list-details
     _ (do
         (eprint "Error unknown command: " s)
         (usage-pp)
@@ -47,10 +90,16 @@
 
 (defn main
   [& args]
-  (when (< (length args) 3) (usage))
+  (when (< (length args) 2) (usage))
   (def cmd (get args 1))
-  (def host (resolv (get args 2)))
-  (match (handle-cmd cmd)
-    :ip (handle-ip host)
-    :web (handle-web host)
-    :ssh (handle-ssh host)))
+  (def cmd-type (handle-cmd cmd))
+  (match cmd-type
+    :list (handle-list)
+    :list-details (handle-list-details)
+    _ (do
+        (when (< (length args) 3) (usage))
+        (def host (resolv (get args 2)))
+        (match cmd-type
+          :ip (handle-ip host)
+          :web (handle-web host)
+          :ssh (handle-ssh host)))))

@@ -78,7 +78,8 @@
             buildPhase = ''
               runHook preBuild
               export JANET_PATH="${spork}/jpm_tree/lib"
-              jpm build --libpath=${pkgs.janet}/lib
+              export JANET_MODPATH="${spork}/jpm_tree/lib"
+              jpm build --libpath=${pkgs.janet}/lib --modpath=${spork}/jpm_tree/lib
               runHook postBuild
             '';
 
