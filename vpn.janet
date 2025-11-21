@@ -21,7 +21,6 @@
             nil))))))
 
 (defn ensure-dirs [dir]
-  # Recursively create directories if they do not exist.
   (when dir
     (try
       (do

@@ -57,6 +57,3 @@
   (if (> (length ips) 0)
     (get ips 0)
     nil))
-
-# Example:
-# (pp (dns-a "mcsv2f1"))
