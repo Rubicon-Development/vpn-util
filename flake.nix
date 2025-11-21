@@ -118,6 +118,8 @@
             installPhase = ''
               runHook preInstall
               install -Dm755 build/vpn $out/bin/vpn
+              install -Dm644 completions/vpn.bash $out/share/bash-completion/completions/vpn
+              install -Dm644 completions/_vpn $out/share/zsh/site-functions/_vpn
               runHook postInstall
             '';
 
@@ -170,7 +172,7 @@
           vpn-static = pkgs.stdenv.mkDerivation {
             pname = "vpn-static";
             version = "0.1.0";
-            src = self'.packages.vpn-c;
+            src = ./.;
 
             buildInputs = [
               pkgs.curl
@@ -182,6 +184,7 @@
               cp ${self'.packages.vpn-c}/janet.h janet.h
               cp ${spork}/jpm_tree/lib/spork/json.a spork-json.a
               cp ${jurl}/jpm_tree/lib/jurl/native.a jurl-native.a
+              cp -r $src/completions completions
             '';
 
             buildPhase = ''
@@ -193,6 +196,8 @@
             installPhase = ''
               runHook preInstall
               install -Dm755 vpn $out/bin/vpn
+              install -Dm644 completions/vpn.bash $out/share/bash-completion/completions/vpn
+              install -Dm644 completions/_vpn $out/share/zsh/site-functions/_vpn
               runHook postInstall
             '';
 

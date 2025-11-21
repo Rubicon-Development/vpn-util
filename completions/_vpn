@@ -1,0 +1,49 @@
+#compdef vpn
+
+_vpn_devices() {
+    local devices
+    devices=(${(f)"$(vpn list 2>/dev/null)"})
+    _describe 'device' devices
+}
+
+_vpn() {
+    local -a commands
+    commands=(
+        'ip:Show the IP address for a device'
+        'web:Open local webpage in browser'
+        'ssh:Start an SSH connection'
+        'list:Show a list of device names'
+        'list-details:Show all available information for each device'
+        'details:Show detailed information for a specific device'
+    )
+
+    _arguments -C \
+        '1: :->command' \
+        '2: :->arg1' \
+        '3: :->arg2'
+
+    case $state in
+        command)
+            _describe -t commands 'vpn command' commands
+            ;;
+        arg1)
+            case "$words[2]" in
+                ip|web|details)
+                    _vpn_devices
+                    ;;
+                ssh)
+                    _users
+                    ;;
+            esac
+            ;;
+        arg2)
+            case "$words[2]" in
+                ssh)
+                    _vpn_devices
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+_vpn "$@"
