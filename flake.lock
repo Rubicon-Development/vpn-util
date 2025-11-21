@@ -39,25 +39,25 @@
     "janet-c": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-x9gG2PXLNrH6zdA0/Ytfd203+xC2ByIJY6hMzOPqo9M=",
+        "narHash": "sha256-057iHb2KK32qOthIP0BzUWhF6ag+/MC4LGp7ySqV+eg=",
         "type": "file",
-        "url": "https://github.com/janet-lang/janet/releases/download/v1.39.1/janet.c"
+        "url": "https://github.com/janet-lang/janet/releases/download/v1.40.1/janet.c"
       },
       "original": {
         "type": "file",
-        "url": "https://github.com/janet-lang/janet/releases/download/v1.39.1/janet.c"
+        "url": "https://github.com/janet-lang/janet/releases/download/v1.40.1/janet.c"
       }
     },
     "janet-h": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-bTfQTpNhA7eMkl26XTbMhSKgyhZUBDxlkxR5K7NQoaE=",
+        "narHash": "sha256-OH+D2vkx/f93YXSz/OAz/wdsMuzH/voN/Qn9tg/isqI=",
         "type": "file",
-        "url": "https://github.com/janet-lang/janet/releases/download/v1.39.1/janet.h"
+        "url": "https://github.com/janet-lang/janet/releases/download/v1.40.1/janet.h"
       },
       "original": {
         "type": "file",
-        "url": "https://github.com/janet-lang/janet/releases/download/v1.39.1/janet.h"
+        "url": "https://github.com/janet-lang/janet/releases/download/v1.40.1/janet.h"
       }
     },
     "janet-lsp-src": {

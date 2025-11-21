@@ -22,11 +22,11 @@
     };
 
     janet-c = {
-      url = "https://github.com/janet-lang/janet/releases/download/v1.39.1/janet.c";
+      url = "https://github.com/janet-lang/janet/releases/download/v1.40.1/janet.c";
       flake = false;
     };
     janet-h = {
-      url = "https://github.com/janet-lang/janet/releases/download/v1.39.1/janet.h";
+      url = "https://github.com/janet-lang/janet/releases/download/v1.40.1/janet.h";
       flake = false;
     };
   };
@@ -139,11 +139,17 @@
             buildInputs = [
               pkgs.jpm
               pkgs.janet
+              pkgs.curl
             ];
 
             buildPhase = ''
               runHook preBuild
-              jpm build --libpath=${pkgs.janet}/lib
+              # Create a combined module directory
+              mkdir -p combined_modules
+              cp -r ${spork}/jpm_tree/lib/* combined_modules/ || true
+              cp -r ${jurl}/jpm_tree/lib/* combined_modules/ || true
+              export JANET_PATH="$(pwd)/combined_modules"
+              jpm build --libpath=${pkgs.janet}/lib --modpath=$(pwd)/combined_modules
               runHook postBuild
             '';
 
@@ -157,6 +163,41 @@
 
             meta = {
               description = "Generated C source for vpn util";
+              platforms = pkgs.lib.platforms.unix;
+            };
+          };
+
+          vpn-static = pkgs.stdenv.mkDerivation {
+            pname = "vpn-static";
+            version = "0.1.0";
+            src = self'.packages.vpn-c;
+
+            buildInputs = [
+              pkgs.curl
+            ];
+
+            unpackPhase = ''
+              cp ${self'.packages.vpn-c}/vpn.c vpn.c
+              cp ${self'.packages.vpn-c}/janet.c janet.c
+              cp ${self'.packages.vpn-c}/janet.h janet.h
+              cp ${spork}/jpm_tree/lib/spork/json.a spork-json.a
+              cp ${jurl}/jpm_tree/lib/jurl/native.a jurl-native.a
+            '';
+
+            buildPhase = ''
+              runHook preBuild
+              $CC -o vpn vpn.c janet.c spork-json.a jurl-native.a -I. -lm -ldl -lcurl -O2
+              runHook postBuild
+            '';
+
+            installPhase = ''
+              runHook preInstall
+              install -Dm755 vpn $out/bin/vpn
+              runHook postInstall
+            '';
+
+            meta = {
+              description = "VPN util compiled from C source";
               platforms = pkgs.lib.platforms.unix;
             };
           };
