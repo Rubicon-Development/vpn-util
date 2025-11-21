@@ -109,13 +109,13 @@
   (cond
     (and primary (do-write primary)) true
     (and fallback (do-write fallback))
-      (do
-        (printf "Using fallback config path %s. Set VPN_CONFIG to this path to reuse it." fallback)
-        true)
+    (do
+      (printf "Using fallback config path %s. Set VPN_CONFIG to this path to reuse it." fallback)
+      true)
     true
-      (do
-        (eprint "Failed to write config; set VPN_CONFIG to a writable path and retry.")
-        (os/exit 1))))
+    (do
+      (eprint "Failed to write config; set VPN_CONFIG to a writable path and retry.")
+      (os/exit 1))))
 
 (defn usage-pp []
   (def msg ``
@@ -195,7 +195,7 @@
   (match s
     "ip" :ip
      "web" :web
-    "ssh" :ssh
+     "ssh" :ssh
      "list" :list
      "list-details" :list-details
      "details" :details
