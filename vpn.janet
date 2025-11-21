@@ -225,6 +225,13 @@
 (defn command? [s]
   (find |(= s $) commands))
 
+(defn read-stdin-hostname []
+  "Read hostname from stdin, trimming whitespace"
+  (def line (file/read stdin :line))
+  (if line
+    (string/trim line)
+    nil))
+
 (defn normalize-args [args]
   # Support binaries that pass argv[0] as program name or not
   (if (and (> (length args) 1)
@@ -248,17 +255,32 @@
                (def api-url (if (> (length argv) 2) (get argv 2) nil))
                (write-config psk api-url))
     :ssh (do
-           (when (< (length argv) 3) (usage))
+           (when (< (length argv) 2) (usage))
            (def user (get argv 1))
-           (def host (resolv (get argv 2)))
+           (def hostname (if (>= (length argv) 3)
+                           (get argv 2)
+                           (read-stdin-hostname)))
+           (when (not hostname)
+             (eprint "Error: no hostname provided (via argument or stdin)")
+             (os/exit 1))
+           (def host (resolv hostname))
            (handle-ssh user host))
     :details (do
-               (when (< (length argv) 2) (usage))
-               (def hostname (get argv 1))
+               (def hostname (if (>= (length argv) 2)
+                               (get argv 1)
+                               (read-stdin-hostname)))
+               (when (not hostname)
+                 (eprint "Error: no hostname provided (via argument or stdin)")
+                 (os/exit 1))
                (handle-details hostname))
     _ (do
-        (when (< (length argv) 2) (usage))
-        (def host (resolv (get argv 1)))
+        (def hostname (if (>= (length argv) 2)
+                        (get argv 1)
+                        (read-stdin-hostname)))
+        (when (not hostname)
+          (eprint "Error: no hostname provided (via argument or stdin)")
+          (os/exit 1))
+        (def host (resolv hostname))
         (match cmd-type
           :ip (handle-ip host)
           :web (handle-web host)))))
