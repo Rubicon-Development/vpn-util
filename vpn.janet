@@ -12,6 +12,7 @@
     ssh <user> <hostname>: Start an ssh connection
     list: Show a list of device names
     list-details: Show all available information for each device
+    details <hostname>: Show detailed information for a specific device
     ``)
   (print msg))
 
@@ -59,6 +60,23 @@
     (print "  Public Key: " (device "public_key"))
     (print)))
 
+(defn handle-details
+  "Display detailed information for a specific device"
+  [hostname]
+  (def devices (fetch-devices))
+  (def device (find |(= ($ "hostname") hostname) devices))
+  (if device
+    (do
+      (print "Device: " (device "hostname"))
+      (print "  Type: " (device "dev_type"))
+      (print "  IP: " (device "ip"))
+      (print "  Last Seen: " (device "last_seen"))
+      (print "  Firmware: " (device "fw_version"))
+      (print "  Public Key: " (device "public_key")))
+    (do
+      (eprint "Device not found: " hostname)
+      (os/exit 1))))
+
 (defn handle-cmd [s]
   (match s
     "ip" :ip
@@ -66,6 +84,7 @@
      "ssh" :ssh
      "list" :list
      "list-details" :list-details
+     "details" :details
      _ (do
          (eprint "Error unknown command: " s)
          (usage-pp)
@@ -100,6 +119,10 @@
           (def user (get args 2))
           (def host (resolv (get args 3)))
           (handle-ssh user host))
+    :details (do
+              (when (< (length args) 3) (usage))
+              (def hostname (get args 2))
+              (handle-details hostname))
     _ (do
         (when (< (length args) 3) (usage))
         (def host (resolv (get args 2)))
