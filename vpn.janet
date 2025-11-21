@@ -5,11 +5,11 @@
 
 (defn usage-pp []
   (def msg ``
-    Usage: vpn [ip|web|ssh|list|list-details] [Hostname]
+    Usage: vpn [COMMAND] [ARGS...]
     Commands:
-    ip: Show the ip
-    web: Open loval webpage in browser
-    ssh: start and ssh connection
+    ip <hostname>: Show the ip
+    web <hostname>: Open local webpage in browser
+    ssh <user> <hostname>: Start an ssh connection
     list: Show a list of device names
     list-details: Show all available information for each device
     ``)
@@ -83,9 +83,9 @@
                (os/exit 1))))
   (os/execute [cmd (string/join @["http://" host])] :pd))
 
-(defn handle-ssh [host]
+(defn handle-ssh [user host]
   (os/execute
-   ["ssh" (string/join @["apex@" host])] :pd))
+   ["ssh" (string/join @[user "@" host])] :pd))
 
 (defn main
   [& args]
@@ -95,10 +95,14 @@
   (match cmd-type
     :list (handle-list)
     :list-details (handle-list-details)
+    :ssh (do
+          (when (< (length args) 4) (usage))
+          (def user (get args 2))
+          (def host (resolv (get args 3)))
+          (handle-ssh user host))
     _ (do
         (when (< (length args) 3) (usage))
         (def host (resolv (get args 2)))
         (match cmd-type
           :ip (handle-ip host)
-          :web (handle-web host)
-          :ssh (handle-ssh host)))))
+          :web (handle-web host)))))
