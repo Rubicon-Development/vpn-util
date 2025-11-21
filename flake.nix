@@ -90,7 +90,7 @@
         packages = {
           default = pkgs.stdenv.mkDerivation {
             pname = name;
-            version = "0.1.3";
+            version = "0.1.4";
             src = ./.;
 
             nativeBuildInputs = [
@@ -131,7 +131,7 @@
 
           vpn-c = pkgs.stdenv.mkDerivation {
             pname = "vpn-c";
-            version = "0.1.0";
+            version = "0.1.4";
             src = ./.;
 
             nativeBuildInputs = [
