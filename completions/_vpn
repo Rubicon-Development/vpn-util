@@ -15,6 +15,7 @@ _vpn() {
         'list:Show a list of device names'
         'list-details:Show all available information for each device'
         'details:Show detailed information for a specific device'
+        'set-psk:Write or update the config with a PSK'
     )
 
     _arguments -C \
@@ -34,12 +35,18 @@ _vpn() {
                 ssh)
                     _users
                     ;;
+                set-psk)
+                    _message 'PSK' 'Enter PSK (required) and optional api_url'
+                    ;;
             esac
             ;;
         arg2)
             case "$words[2]" in
                 ssh)
                     _vpn_devices
+                    ;;
+                set-psk)
+                    _message 'api_url' 'Optional API URL override'
                     ;;
             esac
             ;;
