@@ -32,9 +32,9 @@
   "Fetch devices from the VPN API using jurl"
   []
   (def response (jurl/request {:url api-url :headers {"psk" api-psk}}))
-  # Check if we got a valid response
+  # valid response?
   (when (not= (response :error) :ok)
-    # Ignore SSL errors if we have a body
+    # fuck errors we got body
     (when (not (response :body))
       (eprintf "Error fetching devices: %q" (native/strerror (response :error)))
       (os/exit 1)))
@@ -115,14 +115,14 @@
     :list (handle-list)
     :list-details (handle-list-details)
     :ssh (do
-          (when (< (length args) 4) (usage))
-          (def user (get args 2))
-          (def host (resolv (get args 3)))
-          (handle-ssh user host))
+           (when (< (length args) 4) (usage))
+           (def user (get args 2))
+           (def host (resolv (get args 3)))
+           (handle-ssh user host))
     :details (do
-              (when (< (length args) 3) (usage))
-              (def hostname (get args 2))
-              (handle-details hostname))
+               (when (< (length args) 3) (usage))
+               (def hostname (get args 2))
+               (handle-details hostname))
     _ (do
         (when (< (length args) 3) (usage))
         (def host (resolv (get args 2)))
