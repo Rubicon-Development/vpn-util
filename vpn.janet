@@ -175,8 +175,8 @@
 
 (defn handle-details
   "Display detailed information for a specific device"
-  [hostname]
-  (def devices (fetch-devices))
+  [hostname &opt devices]
+  (default devices (fetch-devices))
   (def device (find |(= ($ "hostname") hostname) devices))
   (if device
     (do
@@ -207,16 +207,17 @@
 (defn handle-ip [host]
   (print host))
 
-(defn find-web-opener []
-  (or (os/which "xdg-open")
-      (os/which "open")))
+(defn try-web-opener [cmd url]
+  (try
+    (= 0 (os/execute @[cmd url] :pd))
+    ([err] false)))
 
 (defn handle-web [host]
-  (def opener (find-web-opener))
-  (when (not opener)
+  (def url (string "http://" host))
+  (when (not (or (try-web-opener "xdg-open" url)
+                 (try-web-opener "open" url)))
     (eprint "Unable to launch browser; need xdg-open (Linux) or open (macOS) in PATH")
-    (os/exit 1))
-  (os/execute [opener (string "http://" host)] :pd))
+    (os/exit 1)))
 
 (defn handle-ssh [user host]
   (os/execute
@@ -225,12 +226,26 @@
 (defn command? [s]
   (find |(= s $) commands))
 
-(defn read-stdin-hostname []
-  "Read hostname from stdin, trimming whitespace"
-  (def line (file/read stdin :line))
-  (if line
-    (string/trim line)
-    nil))
+(defn read-stdin-hostnames []
+  "Read hostnames from stdin, trimming whitespace and skipping blank lines"
+  (def hosts @[])
+  (var line (file/read stdin :line))
+  (while line
+    (def host (string/trim line))
+    (when (> (length host) 0)
+      (array/push hosts host))
+    (set line (file/read stdin :line)))
+  hosts)
+
+(defn gather-hostnames [argv idx]
+  "Return hostnames from argv at idx or all lines from stdin"
+  (def hosts (if (>= (length argv) (+ idx 1))
+               @[ (get argv idx) ]
+               (read-stdin-hostnames)))
+  (when (= (length hosts) 0)
+    (eprint "Error: no hostname provided (via argument or stdin)")
+    (os/exit 1))
+  hosts)
 
 (defn normalize-args [args]
   # Support binaries that pass argv[0] as program name or not
@@ -257,30 +272,21 @@
     :ssh (do
            (when (< (length argv) 2) (usage))
            (def user (get argv 1))
-           (def hostname (if (>= (length argv) 3)
-                           (get argv 2)
-                           (read-stdin-hostname)))
-           (when (not hostname)
-             (eprint "Error: no hostname provided (via argument or stdin)")
-             (os/exit 1))
-           (def host (resolv hostname))
-           (handle-ssh user host))
+           (def hostnames (gather-hostnames argv 2))
+           (each hostname hostnames
+             (def host (resolv hostname))
+             (handle-ssh user host)))
     :details (do
-               (def hostname (if (>= (length argv) 2)
-                               (get argv 1)
-                               (read-stdin-hostname)))
-               (when (not hostname)
-                 (eprint "Error: no hostname provided (via argument or stdin)")
-                 (os/exit 1))
-               (handle-details hostname))
+               (def hostnames (gather-hostnames argv 1))
+               (def devices (fetch-devices))
+               (each hostname hostnames
+                 (handle-details hostname devices)))
     _ (do
-        (def hostname (if (>= (length argv) 2)
-                        (get argv 1)
-                        (read-stdin-hostname)))
-        (when (not hostname)
-          (eprint "Error: no hostname provided (via argument or stdin)")
-          (os/exit 1))
-        (def host (resolv hostname))
-        (match cmd-type
-          :ip (handle-ip host)
-          :web (handle-web host)))))
+        (def hostnames (gather-hostnames argv 1))
+        (each hostname hostnames
+          (def host (resolv hostname))
+          (match cmd-type
+            :ip (handle-ip host)
+            :web (handle-web host))))
+)
+)
