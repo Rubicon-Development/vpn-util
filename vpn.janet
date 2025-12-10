@@ -54,9 +54,9 @@
     (eprintf "Missing config file at %s\nCreate JSON like: {\"psk\": \"<psk>\", \"api_url\": \"<optional override>\"}\nYou can override the path with $VPN_CONFIG or place vpn-config.json in the current directory." path)
     (os/exit 1))
   (def data (try (json/decode (slurp path))
-              ([err]
+              ([err
                 (eprintf "Failed to read config %s: %v" path err)
-                (os/exit 1))))
+                (os/exit 1)])))
   (when (not (data "psk"))
     (eprintf "Config file %s missing \"psk\" key\nExample: {\"psk\": \"<psk>\", \"api_url\": \"<optional override>\"}" path)
     (os/exit 1))
@@ -83,10 +83,10 @@
       (eprintf "Failed to create config directory %s: %v\nSet VPN_CONFIG to a writable path if needed." parent mkres))
     (when (and ok (os/stat path))
       (def old (try (json/decode (slurp path))
-                 ([err]
+                 ([err
                    (set ok false)
                    (eprintf "Failed to read existing config %s: %v" path err)
-                   nil)))
+                   nil])))
       (when ok (eachp [k v] old (put data k v))))
     (put data "psk" psk)
     (when api-url (put data "api_url" api-url))
@@ -207,17 +207,33 @@
 (defn handle-ip [host]
   (print host))
 
+(defn is-wsl []
+  (try
+    (not= nil (os/stat "/usr/bin/wslinfo"))
+    ([err] false)))
+
 (defn try-web-opener [cmd url]
   (try
     (= 0 (os/execute @[cmd url] :pd))
     ([err] false)))
 
+(defn handle-web-for-os [os-type url]
+  (when (not (match os-type
+               :macos (try-web-opener "open" url)
+               :wsl (try-web-opener "wslview" url)
+               :linux (try-web-opener "xdg-open" url)
+               :posix (try-web-opener "xdg-open" url)
+               :windows (try-web-opener "explorer" url)
+               _ false))
+    (eprint "Unable to launch browser")
+    (os/exit 1)))
+
+(defn which-os []
+  (if (is-wsl) :wsl (os/which)))
+
 (defn handle-web [host]
   (def url (string "http://" host))
-  (when (not (or (try-web-opener "xdg-open" url)
-                 (try-web-opener "open" url)))
-    (eprint "Unable to launch browser; need xdg-open (Linux) or open (macOS) in PATH")
-    (os/exit 1)))
+  (handle-web-for-os (which-os) url))
 
 (defn handle-ssh [user host]
   (os/execute
@@ -240,7 +256,7 @@
 (defn gather-hostnames [argv idx]
   "Return hostnames from argv at idx or all lines from stdin"
   (def hosts (if (>= (length argv) (+ idx 1))
-               @[ (get argv idx) ]
+               @[(get argv idx)]
                (read-stdin-hostnames)))
   (when (= (length hosts) 0)
     (eprint "Error: no hostname provided (via argument or stdin)")
@@ -287,6 +303,4 @@
           (def host (resolv hostname))
           (match cmd-type
             :ip (handle-ip host)
-            :web (handle-web host))))
-)
-)
+            :web (handle-web host))))))
