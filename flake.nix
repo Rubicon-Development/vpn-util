@@ -90,7 +90,7 @@
         packages = {
           default = pkgs.stdenv.mkDerivation {
             pname = name;
-            version = "0.1.4";
+            version = "0.1.5";
             src = ./.;
 
             nativeBuildInputs = [
