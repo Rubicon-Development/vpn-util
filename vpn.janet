@@ -54,9 +54,9 @@
     (eprintf "Missing config file at %s\nCreate JSON like: {\"psk\": \"<psk>\", \"api_url\": \"<optional override>\"}\nYou can override the path with $VPN_CONFIG or place vpn-config.json in the current directory." path)
     (os/exit 1))
   (def data (try (json/decode (slurp path))
-              ([err
+              ([err]
                 (eprintf "Failed to read config %s: %v" path err)
-                (os/exit 1)])))
+                (os/exit 1))))
   (when (not (data "psk"))
     (eprintf "Config file %s missing \"psk\" key\nExample: {\"psk\": \"<psk>\", \"api_url\": \"<optional override>\"}" path)
     (os/exit 1))
@@ -83,10 +83,10 @@
       (eprintf "Failed to create config directory %s: %v\nSet VPN_CONFIG to a writable path if needed." parent mkres))
     (when (and ok (os/stat path))
       (def old (try (json/decode (slurp path))
-                 ([err
+                 ([err]
                    (set ok false)
                    (eprintf "Failed to read existing config %s: %v" path err)
-                   nil])))
+                   nil)))
       (when ok (eachp [k v] old (put data k v))))
     (put data "psk" psk)
     (when api-url (put data "api_url" api-url))
