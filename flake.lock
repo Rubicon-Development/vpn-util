@@ -39,25 +39,25 @@
     "janet-c": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-057iHb2KK32qOthIP0BzUWhF6ag+/MC4LGp7ySqV+eg=",
+        "narHash": "sha256-z2KCctIBO55hi9TR5NRA7aAe5It/QLThi689jeTC3+U=",
         "type": "file",
-        "url": "https://github.com/janet-lang/janet/releases/download/v1.40.1/janet.c"
+        "url": "https://github.com/janet-lang/janet/releases/download/v1.41.2/janet.c"
       },
       "original": {
         "type": "file",
-        "url": "https://github.com/janet-lang/janet/releases/download/v1.40.1/janet.c"
+        "url": "https://github.com/janet-lang/janet/releases/download/v1.41.2/janet.c"
       }
     },
     "janet-h": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-OH+D2vkx/f93YXSz/OAz/wdsMuzH/voN/Qn9tg/isqI=",
+        "narHash": "sha256-r5ZpUP2c6KQBiUQsKKMiBiKnqp/aLOEnuof4PSR8BJA=",
         "type": "file",
-        "url": "https://github.com/janet-lang/janet/releases/download/v1.40.1/janet.h"
+        "url": "https://github.com/janet-lang/janet/releases/download/v1.41.2/janet.h"
       },
       "original": {
         "type": "file",
-        "url": "https://github.com/janet-lang/janet/releases/download/v1.40.1/janet.h"
+        "url": "https://github.com/janet-lang/janet/releases/download/v1.41.2/janet.h"
       }
     },
     "janet-lsp-src": {
@@ -191,15 +191,16 @@
     "spork": {
       "flake": false,
       "locked": {
-        "lastModified": 1776515126,
-        "narHash": "sha256-4oKmRjwDMRwlnntHOh3k2XG3pNxQ239Hgvw7zlokoCQ=",
+        "lastModified": 1760129721,
+        "narHash": "sha256-0L2G7flzNzi8w1nkGcQrtKjGl/D2uC8xSRgsBuLgRxM=",
         "owner": "janet-lang",
         "repo": "spork",
-        "rev": "993887a8dbc9387af3b037418f02ef8e2b42b275",
+        "rev": "493fc97674d18ad4b73627c3e444611325c73b84",
         "type": "github"
       },
       "original": {
         "owner": "janet-lang",
+        "ref": "v1.1.1",
         "repo": "spork",
         "type": "github"
       }
