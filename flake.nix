@@ -21,6 +21,11 @@
       flake = false;
     };
 
+    jdoc = {
+      url = "github:sogaiu/jdoc";
+      flake = false;
+    };
+
     janet-c = {
       url = "https://github.com/janet-lang/janet/releases/download/v1.40.1/janet.c";
       flake = false;
@@ -51,6 +56,11 @@
         spork = j2nLib.mkJanetPackage {
           name = "spork";
           src = inputs.spork;
+        };
+
+        jdoc = j2nLib.mkJanetPackage {
+          name = "jdoc";
+          src = inputs.jdoc;
         };
 
         jurl = pkgs.stdenv.mkDerivation {
@@ -84,6 +94,10 @@
               jpm
               janet-lsp
             ];
+            shellHook = ''
+              export JANET_PATH="${jdoc}/jpm_tree/lib:$JANET_PATH"
+              export PATH="${jdoc}/jpm_tree/bin:$PATH"
+            '';
           };
         };
 

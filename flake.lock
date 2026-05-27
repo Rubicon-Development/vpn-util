@@ -5,11 +5,11 @@
         "nixpkgs-lib": "nixpkgs-lib"
       },
       "locked": {
-        "lastModified": 1762980239,
-        "narHash": "sha256-8oNVE8TrD19ulHinjaqONf9QWCKK+w4url56cdStMpM=",
+        "lastModified": 1778716662,
+        "narHash": "sha256-m1Yf0wZ8j1OHjTc2UwHwyQRSnNeSgLJOd7q5Y45hzi4=",
         "owner": "hercules-ci",
         "repo": "flake-parts",
-        "rev": "52a2caecc898d0b46b2b905f058ccc5081f842da",
+        "rev": "f7c1a2d347e4c52d5fb8d10cb4d94b5884e546fb",
         "type": "github"
       },
       "original": {
@@ -63,11 +63,11 @@
     "janet-lsp-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1757504214,
-        "narHash": "sha256-XcIUAmfzBNcsln/XZu9dZoTCTyxoCjNeg//6IK35INs=",
+        "lastModified": 1779873787,
+        "narHash": "sha256-GPN+JxRHVyL3QwWDj/GU9nOCuoB4ywuBonebF7X/R54=",
         "owner": "Blue-Berry",
         "repo": "janet-lsp.nix",
-        "rev": "b8334a469d38f191198a20a75a6c470c2ea588d2",
+        "rev": "98385eeacff35b02bd4458cae01be5370bdcc3c2",
         "type": "github"
       },
       "original": {
@@ -92,6 +92,22 @@
       "original": {
         "owner": "alan-strohm",
         "repo": "janet2nix",
+        "type": "github"
+      }
+    },
+    "jdoc": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1763705177,
+        "narHash": "sha256-7p3YYb8z5/k+OZdAyutMmtJKN2ViiKYrLE/MSx84w38=",
+        "owner": "sogaiu",
+        "repo": "jdoc",
+        "rev": "a7243d89f411658aa7ab909b073379fb550ab99d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "sogaiu",
+        "repo": "jdoc",
         "type": "github"
       }
     },
@@ -130,11 +146,11 @@
     },
     "nixpkgs-lib": {
       "locked": {
-        "lastModified": 1761765539,
-        "narHash": "sha256-b0yj6kfvO8ApcSE+QmA6mUfu8IYG6/uU28OFn4PaC8M=",
+        "lastModified": 1777168982,
+        "narHash": "sha256-GOkGPcboWE9BmGCRMLX3worL4EMnsnG8MyKmXNeYuhQ=",
         "owner": "nix-community",
         "repo": "nixpkgs.lib",
-        "rev": "719359f4562934ae99f5443f20aa06c2ffff91fc",
+        "rev": "f5901329dade4a6ea039af1433fb087bd9c1fe14",
         "type": "github"
       },
       "original": {
@@ -145,11 +161,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1763421233,
-        "narHash": "sha256-Stk9ZYRkGrnnpyJ4eqt9eQtdFWRRIvMxpNRf4sIegnw=",
+        "lastModified": 1779560665,
+        "narHash": "sha256-tpyBcxPpcQb8ukyNF7DoCwfSY3VPsxHoYwj00Cayv5o=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "89c2b2330e733d6cdb5eae7b899326930c2c0648",
+        "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
         "type": "github"
       },
       "original": {
@@ -166,6 +182,7 @@
         "janet-h": "janet-h",
         "janet-lsp-src": "janet-lsp-src",
         "janet2nix": "janet2nix",
+        "jdoc": "jdoc",
         "jurl": "jurl",
         "nixpkgs": "nixpkgs_2",
         "spork": "spork"
@@ -174,11 +191,11 @@
     "spork": {
       "flake": false,
       "locked": {
-        "lastModified": 1762982439,
-        "narHash": "sha256-3TnGeulJSHbr2J2UKkb2jcDX+xCuhLYViXUNvSN6Vmk=",
+        "lastModified": 1776515126,
+        "narHash": "sha256-4oKmRjwDMRwlnntHOh3k2XG3pNxQ239Hgvw7zlokoCQ=",
         "owner": "janet-lang",
         "repo": "spork",
-        "rev": "e939a040f7183a518d9b396d017e1773e228a4c3",
+        "rev": "993887a8dbc9387af3b037418f02ef8e2b42b275",
         "type": "github"
       },
       "original": {
