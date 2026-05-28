@@ -1,0 +1,4 @@
+@[{:url "https://github.com/janet-lang/pkgs.git" :tag "36e69933328cc7ac98ac8d59fca315906cd82384" :type :git}
+  {:url "https://github.com/janet-lang/spork.git" :tag "993887a8dbc9387af3b037418f02ef8e2b42b275" :type :git}
+  {:url "https://github.com/cosmictoast/jurl.git" :tag "e620ee820d50585c0efecfff2c2d580b5ac18213" :type :git}
+  {:url "git@github.com:Rubicon-Development/vpn-util.git" :tag "1f57152173de347987ca4c93924d213410c14a5e" :type :git}]
