@@ -17,10 +17,12 @@ jobs:
             attr: default
             artifact: vpn-linux-x86_64
             qemu: false
+            features: benchmark big-parallel kvm nixos-test uid-range
           - system: armv7l-linux
             attr: packages.armv7l-linux.default
             artifact: vpn-linux-armv7l
             qemu: true
+            features: benchmark big-parallel kvm nixos-test uid-range gccarch-armv7-a
     runs-on: ubuntu-latest
     timeout-minutes: 240
     steps:
@@ -37,6 +39,7 @@ jobs:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
         extra_nix_config: |
           extra-platforms = ${{ matrix.system }}
+          system-features = ${{ matrix.features }}
 
     - name: Build ${{ matrix.system }} binary
       run: |
