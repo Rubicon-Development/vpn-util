@@ -9,20 +9,54 @@ permissions:
   contents: write
 
 jobs:
-  build-release:
+  build-binaries:
+    strategy:
+      matrix:
+        include:
+          - system: x86_64-linux
+            attr: default
+            artifact: vpn-linux-x86_64
+            qemu: false
+          - system: armv7l-linux
+            attr: packages.armv7l-linux.default
+            artifact: vpn-linux-armv7l
+            qemu: true
     runs-on: ubuntu-latest
+    timeout-minutes: 240
     steps:
     - uses: actions/checkout@v4
-    
+
+    - name: Set up QEMU
+      if: matrix.qemu
+      uses: docker/setup-qemu-action@v3
+      with:
+        platforms: arm
+
     - uses: cachix/install-nix-action@v27
       with:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Build x86_64-linux binary
+        extra_nix_config: |
+          extra-platforms = ${{ matrix.system }}
+
+    - name: Build ${{ matrix.system }} binary
       run: |
-        nix build .#default
-        cp result/bin/vpn vpn-linux-x86_64
-    
+        nix build .#${{ matrix.attr }}
+        cp result/bin/vpn ${{ matrix.artifact }}
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.artifact }}
+        path: ${{ matrix.artifact }}
+
+  build-c-source:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: cachix/install-nix-action@v27
+      with:
+        github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Build C source package
       run: |
         nix build .#vpn-c
@@ -32,13 +66,28 @@ jobs:
         cp result/janet.h vpn-c-source/
         echo "Compile with: cl vpn.c janet.c /Fe:vpn.exe" > vpn-c-source/BUILD.txt
         zip -r vpn-c-source.zip vpn-c-source/
-    
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: vpn-c-source.zip
+        path: vpn-c-source.zip
+
+  release:
+    needs: [build-binaries, build-c-source]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+        merge-multiple: true
+
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          vpn-linux-x86_64
-          vpn-c-source.zip
+          artifacts/vpn-linux-x86_64
+          artifacts/vpn-linux-armv7l
+          artifacts/vpn-c-source.zip
         draft: false
         prerelease: false
       env:
